@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 require "trollop"
-require "knights_tour"
+require_relative "../lib/knights_tour"
 
 # Parse the command line arguments and invoke the application.
 
@@ -22,15 +22,19 @@ Where SIZE (default: 8,8) sets the size of the board to ROWS x COLS.
 Options:
   EOS
 
-  opt :start_at, "Set the initial position of the knight (default: 0,0)",
+  opt :start_at, "Set the initial position of the knight (default: 0,2)",
       :type     => :string,
-      :required => false
+      required: false
+  opt :stop_at, "Set the final position of the Knight",
+      :type => :string,
+      required: false
 end
 
 begin
   app_params = {}
   app_params[:size]     = ARGV.shift unless ARGV.empty?
   app_params[:start_at] = options[:start_at] if options[:start_at]
+  app_params[:stop_at]  = options[:stop_at] if options[:stop_at]
 
   app = Application.new(app_params)
 rescue ArgumentError => e
