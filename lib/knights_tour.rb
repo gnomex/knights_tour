@@ -3,9 +3,9 @@ module KnightsTour
 
   class Application
     def initialize(params = {})
-      @board_size = parse_board_size(params[:size] || [8, 8])
+      @board_size = parse_board_size(params[:size] || [10, 10])
       @knight_starts_at = parse_position_on_board(
-          params[:start_at] || [0, 0],
+          params[:start_at] || [0, 2],
           @board_size)
     end
 
@@ -91,12 +91,14 @@ module KnightsTour
 
     def traverse_to(new_position)
       @steps_taken += 1
+      puts "Current Position #{ @current_position } To #{new_position}"
       @current_position = new_position
       @board[@current_position[0]][@current_position[1]] = @steps_taken
       self
     end
 
     def find_next_positions
+      sleep 2
       sort_by_warnsdorffs_heuristics(find_next_positions_at(@current_position))
     end
 
