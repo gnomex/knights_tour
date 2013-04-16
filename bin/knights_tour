@@ -22,7 +22,7 @@ Where SIZE (default: 8,8) sets the size of the board to ROWS x COLS.
 Options:
   EOS
 
-  opt :start_at, "Set the initial position of the knight (default: 0,2)",
+  opt :start_at, "Set the initial position of the knight",
       :type     => :string,
       required: false
   opt :stop_at, "Set the final position of the Knight",

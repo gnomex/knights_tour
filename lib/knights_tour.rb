@@ -1,17 +1,26 @@
 module KnightsTour
-  VERSION = "0.3.5"
+  VERSION = "0.4.0"
 
   class Application
+
+    # Params: 
+    # => Bord Size
+    # => Knight Start at
+    # => Knight Stop at
     def initialize(params = {})
-      @board_size = parse_board_size(params[:size] || [10, 10])
+      @board_size = parse_board_size(params[:size] || [8, 8])
       @knight_starts_at = parse_position_on_board(
           params[:start_at] || [0, 2],
           @board_size)
+      @knight_stop_at = parse_position_on_board(
+          params[:stop_at] || [5, 0],
+          @board_size)
     end
 
+    # calls the BackTracking Algorithm and returns the result
     def solve
       @solution ||= StringResult.new(traverse(
-                      Knight.new(@board_size, @knight_starts_at)))
+                      Knight.new(@board_size, @knight_starts_at, @knight_stop_at)))
     end
 
     private
@@ -52,16 +61,25 @@ module KnightsTour
     # to a new position in each recursive step of the algorithm, instead of
     # modifying a single shared board in place.
     def traverse(knight)
+
       unless knight.traversed?
+      	# Take the first solutions
         next_positions = knight.find_next_positions
+        # find solutions of first solutions
         next_positions.each do |next_position|
+
+        	if knight.is_target?
+						return knight        		
+        	end
+
           knight = traverse(knight.dup.traverse_to(next_position))
+          
           unless knight.nil?
             return knight   # return the first solution found
           end
+
         end
       end
-
       knight  # no solutions found, or already found one
     end
   end
@@ -73,10 +91,11 @@ module KnightsTour
 
     attr_reader :board, :steps_taken, :current_position
 
-    def initialize(board_size, start_at)
+    def initialize(board_size, start_at, stop_at)
       @board = Array.new(board_size[0]) { Array.new(board_size[1], 0) }
       @steps_taken = 0
       traverse_to(start_at)
+      @stop_at = stop_at
     end
 
     def initialize_copy(other)
@@ -98,9 +117,15 @@ module KnightsTour
     end
 
     def find_next_positions
-      sleep 2
-      sort_by_warnsdorffs_heuristics(find_next_positions_at(@current_position))
+      sleep 0.5
+   		sort_by_warnsdorffs_heuristics(find_next_positions_at(@current_position))
     end
+
+
+  	def is_target?
+  		puts "--------------------------------The current #{@current_position} is equal to #{@stop_at} ??? "
+    	@current_position == @stop_at
+  	end
 
     private
 
@@ -110,7 +135,7 @@ module KnightsTour
     #
     # References:
     #   <http://mathworld.wolfram.com/KnightsTour.html>
-    #   <http://web.telia.com/~u85905224/knight/eWarnsd.htm>
+    #   <http://web.telia.com/~u85905224/knight/eWarnsd.html>
     def sort_by_warnsdorffs_heuristics(positions)
       positions.sort_by do |position|
         find_next_positions_at(position).size
